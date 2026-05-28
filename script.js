@@ -284,20 +284,30 @@ const renderCart = () => {
 searchInput.addEventListener("input", renderProducts);
 sortSelect.addEventListener("change", renderProducts);
 categoryFilter.addEventListener("change", renderProducts);
-resetData.addEventListener("click", resetAllData);
-seedData.addEventListener("click", seedAllData);
-checkout.addEventListener("click", () => {
-    if (!Object.keys(state.cart).length) {
-        showToast("Giỏ hàng trống. Hãy chọn sản phẩm trước.");
-        return;
-    }
-    openModal();
-});
-stayHome.addEventListener("click", closeModal);
-goCheckout.addEventListener("click", () => {
-    closeModal();
-    window.location.href = "checkout.html";
-});
+if (resetData) {
+    resetData.addEventListener("click", resetAllData);
+}
+if (seedData) {
+    seedData.addEventListener("click", seedAllData);
+}
+if (checkout) {
+    checkout.addEventListener("click", () => {
+        if (!Object.keys(state.cart).length) {
+            showToast("Giỏ hàng trống. Hãy chọn sản phẩm trước.");
+            return;
+        }
+        openModal();
+    });
+}
+if (stayHome) {
+    stayHome.addEventListener("click", closeModal);
+}
+if (goCheckout) {
+    goCheckout.addEventListener("click", () => {
+        closeModal();
+        window.location.href = "checkout.html";
+    });
+}
 checkoutModal?.addEventListener("click", (event) => {
     if (event.target.classList.contains("modal-backdrop")) closeModal();
 });
