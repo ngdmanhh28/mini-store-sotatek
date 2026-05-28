@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shop Mạnh Dũng - Thanh Toán</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="site-header">
+        <div class="brand">
+          <span class="brand-mark">S</span>
+          <div>
+            <h1>Shop Mạnh Dũng</h1>
+            <p>Trang thanh toán</p>
+          </div>
+        </div>
+        <div class="controls">
+          <a class="btn ghost" href="index.html">Quay về cửa hàng</a>
+        </div>
+      </header>
+
+      <main class="content">
+        <section>
+          <div class="section-title">
+            <h3>Thông tin giao hàng</h3>
+          </div>
+          <div class="card" style="animation: none; opacity: 1;">
+            <label class="field">
+              <span>Họ và tên</span>
+              <input type="text" placeholder="Nguyễn Văn A" />
+            </label>
+            <label class="field">
+              <span>Số điện thoại</span>
+              <input type="tel" placeholder="0909 000 000" />
+            </label>
+            <label class="field">
+              <span>Địa chỉ</span>
+              <input type="text" placeholder="Số nhà, đường, quận" />
+            </label>
+            <label class="field">
+              <span>Ghi chú</span>
+              <input type="text" placeholder="Giao giờ hành chính" />
+            </label>
+          </div>
+        </section>
+
+        <aside class="cart">
+          <div class="cart-header">
+            <h3>Đơn hàng</h3>
+            <span id="checkoutCount">0 món</span>
+          </div>
+          <div class="cart-tools">
+            <button id="clearCart" class="btn ghost" type="button">Xóa giỏ hàng</button>
+          </div>
+          <div id="checkoutList" class="cart-list"></div>
+          <div class="cart-summary">
+            <div>
+              <span>Tạm tính</span>
+              <strong id="checkoutSubtotal">0 đ</strong>
+            </div>
+            <div>
+              <span>Phí vận chuyển</span>
+              <strong id="checkoutShipping">0 đ</strong>
+            </div>
+            <div class="total">
+              <span>Tổng cộng</span>
+              <strong id="checkoutTotal">0 đ</strong>
+            </div>
+          </div>
+          <button id="placeOrder" class="btn primary">Xác nhận mua hàng</button>
+          <p class="note">Đơn hàng được lưu trong bộ nhớ cục bộ (Local Storage).</p>
+        </aside>
+      </main>
+    </div>
+
+    <template id="checkoutItemTemplate">
+      <div class="cart-item">
+        <div>
+          <h4></h4>
+          <p class="muted"></p>
+        </div>
+        <div class="qty">
+          <button class="btn-icon" data-action="dec" type="button">-</button>
+          <span class="count">1</span>
+          <button class="btn-icon" data-action="inc" type="button">+</button>
+          <button class="btn-icon" data-action="remove" type="button">x</button>
+        </div>
+        <strong class="line-total"></strong>
+      </div>
+    </template>
+
+    <script>
+      const STORAGE_KEYS = {
+        products: "demo-shop-products",
+        cart: "demo-shop-cart",
+      };
+
+      const getStored = (key, fallback) => {
+        const raw = localStorage.getItem(key);
+        if (!raw) return fallback;
+        try {
+          return JSON.parse(raw);
+        } catch {
+          return fallback;
+        }
+      };
+
+      const formatPrice = (value) => {
+        return new Intl.NumberFormat("vi-VN").format(value) + " đ";
+      };
+
+      const products = getStored(STORAGE_KEYS.products, []);
+      let cart = getStored(STORAGE_KEYS.cart, {});
+
+      const checkoutList = document.getElementById("checkoutList");
+      const checkoutCount = document.getElementById("checkoutCount");
+      const checkoutSubtotal = document.getElementById("checkoutSubtotal");
+      const checkoutShipping = document.getElementById("checkoutShipping");
+      const checkoutTotal = document.getElementById("checkoutTotal");
+      const placeOrder = document.getElementById("placeOrder");
+      const clearCart = document.getElementById("clearCart");
+      const itemTemplate = document.getElementById("checkoutItemTemplate");
+
+      const setStored = (key, value) => {
+        localStorage.setItem(key, JSON.stringify(value));
+      };
+
+      const updateCartQty = (productId, delta) => {
+        if (!cart[productId]) return;
+        const next = cart[productId] + delta;
+        if (next <= 0) {
+          delete cart[productId];
+        } else {
+          cart[productId] = next;
+        }
+        setStored(STORAGE_KEYS.cart, cart);
+        renderCheckout();
+      };
+
+      const removeFromCart = (productId) => {
+        if (!cart[productId]) return;
+        delete cart[productId];
+        setStored(STORAGE_KEYS.cart, cart);
+        renderCheckout();
+      };
+
+      const clearAllCart = () => {
+        cart = {};
+        setStored(STORAGE_KEYS.cart, cart);
+        renderCheckout();
+      };
+
+      const renderCheckout = () => {
+        const entries = Object.entries(cart);
+        checkoutList.innerHTML = "";
+        if (!entries.length) {
+          checkoutList.innerHTML = "<p class=\"muted\">Không có sản phẩm nào.</p>";
+        }
+
+        let subtotal = 0;
+        let totalItems = 0;
+
+        entries.forEach(([productId, qty]) => {
+          const product = products.find((item) => item.id === productId);
+          if (!product) return;
+          const lineTotal = product.price * qty;
+          subtotal += lineTotal;
+          totalItems += qty;
+
+          const row = itemTemplate.content.cloneNode(true);
+          row.querySelector("h4").textContent = product.name;
+          row.querySelector(".muted").textContent = "x" + qty + " | " + product.tag;
+          row.querySelector(".count").textContent = qty;
+          row.querySelector(".line-total").textContent = formatPrice(lineTotal);
+
+          row.querySelector("[data-action=\"dec\"]").addEventListener("click", () =>
+            updateCartQty(productId, -1)
+          );
+          row.querySelector("[data-action=\"inc\"]").addEventListener("click", () =>
+            updateCartQty(productId, 1)
+          );
+          row.querySelector("[data-action=\"remove\"]").addEventListener("click", () =>
+            removeFromCart(productId)
+          );
+          checkoutList.appendChild(row);
+        });
+
+        const shipping = subtotal >= 2000000 || subtotal === 0 ? 0 : 35000;
+        checkoutCount.textContent = totalItems + " món";
+        checkoutSubtotal.textContent = formatPrice(subtotal);
+        checkoutShipping.textContent = formatPrice(shipping);
+        checkoutTotal.textContent = formatPrice(subtotal + shipping);
+      };
+
+      placeOrder.addEventListener("click", () => {
+        if (!Object.keys(cart).length) {
+          alert("Giỏ hàng trống. Hãy quay về cửa hàng.");
+          return;
+        }
+        alert("Đã ghi nhận đơn hàng! Cảm ơn bạn.");
+      });
+
+      clearCart.addEventListener("click", clearAllCart);
+
+      renderCheckout();
+    </script>
+  </body>
+</html>
