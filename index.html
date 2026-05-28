@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Shop Mạnh Dũng - Giày Thế Hệ Mới</title>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<div class="page">
+			<header class="site-header">
+				<div class="brand">
+					<span class="brand-mark">S</span>
+					<div>
+						<h1>Shop Mạnh Dũng</h1>
+						<p>Giày đẹp, êm chân, đầy cá tính</p>
+					</div>
+				</div>
+				<div class="controls">
+					<label class="field">
+						<span>Tìm kiếm</span>
+						<input id="searchInput" type="search" placeholder="Nike, phố, leo núi..." />
+					</label>
+					<label class="field">
+						<span>Danh mục</span>
+						<select id="categoryFilter">
+							<option value="all">Tất cả</option>
+							<option value="running">Chạy bộ</option>
+							<option value="street">Đường phố</option>
+							<option value="outdoor">Dã ngoại</option>
+							<option value="lifestyle">Phong cách</option>
+						</select>
+					</label>
+					<label class="field">
+						<span>Sắp xếp</span>
+						<select id="sortSelect">
+							<option value="featured">Nổi bật</option>
+							<option value="price-asc">Giá tăng dần</option>
+							<option value="price-desc">Giá giảm dần</option>
+							<option value="name-asc">Tên A-Z</option>
+						</select>
+					</label>
+				</div>
+			</header>
+
+			<section class="hero">
+				<div>
+					<p class="eyebrow">Bộ sưu tập 2026</p>
+					<h2>Chọn đôi giày này, bước đi thành khoảnh khắc.</h2>
+					
+					<div class="hero-actions">
+						<button id="resetData" class="btn">Làm mới dữ liệu</button>
+						<button id="seedData" class="btn ghost">Tải lại mẫu</button>
+					</div>
+				</div>
+				<div class="hero-card">
+					<p>Đợt mở bán</p>
+					<h3>Runner Sóng Bão</h3>
+					<div class="badge">-15%</div>
+					<p class="price">1.890.000 đ</p>
+				</div>
+			</section>
+
+			<main class="content">
+				<section>
+					<div class="section-title">
+						<h3>Sản phẩm</h3>
+						<span id="productCount">0 sản phẩm</span>
+					</div>
+					<div id="productGrid" class="grid"></div>
+				</section>
+
+				<aside class="cart">
+					<div class="cart-header">
+						<h3>Giỏ hàng</h3>
+						<span id="cartCount">0 món</span>
+					</div>
+					<div id="cartList" class="cart-list"></div>
+					<div class="cart-summary">
+						<div>
+							<span>Tạm tính</span>
+							<strong id="cartSubtotal">0 đ</strong>
+						</div>
+						<div>
+							<span>Phí vận chuyển</span>
+							<strong id="shippingFee">0 đ</strong>
+						</div>
+						<div class="total">
+							<span>Tổng cộng</span>
+							<strong id="cartTotal">0 đ</strong>
+						</div>
+					</div>
+					<button id="checkout" class="btn primary">Thanh toán</button>
+					<p class="note">Mẹo: mọi thay đổi được lưu lại.</p>
+				</aside>
+			</main>
+		</div>
+
+		<template id="productCardTemplate">
+			<article class="card">
+				<div class="thumb">
+					<img src="" alt="" loading="lazy" />
+				</div>
+				<div class="card-top">
+					<span class="tag"></span>
+					<button class="btn-icon" type="button" aria-label="Thêm vào giỏ hàng">+</button>
+				</div>
+				<h4></h4>
+				<p class="desc"></p>
+				<div class="card-meta">
+					<span class="price"></span>
+					<span class="rating"></span>
+				</div>
+			</article>
+		</template>
+
+		<template id="cartItemTemplate">
+			<div class="cart-item">
+				<div>
+					<h4></h4>
+					<p class="muted"></p>
+				</div>
+				<div class="qty">
+					<button class="btn-icon" data-action="dec" type="button">-</button>
+					<span class="count">1</span>
+					<button class="btn-icon" data-action="inc" type="button">+</button>
+				</div>
+				<strong class="line-total"></strong>
+			</div>
+		</template>
+
+		<div id="toast" class="toast" role="status" aria-live="polite"></div>
+		<div id="checkoutModal" class="modal" aria-hidden="true">
+			<div class="modal-backdrop"></div>
+			<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+				<h3 id="modalTitle">Xác nhận thanh toán</h3>
+				<p>Bạn muốn chuyển sang trang thanh toán hay ở lại trang chủ?</p>
+				<div class="modal-actions">
+					<button id="stayHome" class="btn ghost" type="button">Ở lại trang chủ</button>
+					<button id="goCheckout" class="btn primary" type="button">Sang trang thanh toán</button>
+				</div>
+			</div>
+		</div>
+
+		<script src="script.js" defer></script>
+	</body>
+</html>
